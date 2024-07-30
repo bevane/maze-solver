@@ -3,10 +3,16 @@ from tkinter import Tk, BOTH, Canvas
 
 def main():
     win = Window(800, 600)
-    top_left = Point(10, 10)
-    bottom_right = Point(50, 50)
-    cell = Cell(top_left, bottom_right, win)
-    cell.draw()
+    top_left1 = Point(10, 10)
+    bottom_right1 = Point(50, 50)
+    cell1 = Cell(top_left1, bottom_right1, win)
+    cell1.draw()
+
+    top_left2 = Point(100, 10)
+    bottom_right2 = Point(140, 50)
+    cell2 = Cell(top_left2, bottom_right2, win)
+    cell2.draw()
+    cell1.draw_move(cell2)
     win.wait_for_close()
 
 
@@ -90,6 +96,17 @@ class Cell:
             bottom_wall_right = Point(self._x2, self._y2)
             bottom_wall = Line(bottom_wall_left, bottom_wall_right)
             self._win.draw_line(bottom_wall, "black")
+
+    def draw_move(self, to_cell, undo=False):
+        from_cell_center_x = int((self._x2 + self._x1) / 2)
+        from_cell_center_y = int((self._y2 + self._y1) / 2)
+        to_cell_center_x = (to_cell._x2 + to_cell._x1) / 2
+        to_cell_center_y = (to_cell._y2 + to_cell._y1) / 2
+        from_point = Point(from_cell_center_x, from_cell_center_y)
+        to_point = Point(to_cell_center_x, to_cell_center_y)
+        move_line = Line(from_point, to_point)
+        line_color = "red" if undo else "gray"
+        self._win.draw_line(move_line, line_color)
 
 
 main()
