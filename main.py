@@ -3,15 +3,11 @@ from tkinter import Tk, BOTH, Canvas
 
 def main():
     win = Window(800, 600)
-    top_left1 = Point(10, 10)
-    bottom_right1 = Point(50, 50)
-    cell1 = Cell(top_left1, bottom_right1, win)
-    cell1.draw()
+    cell1 = Cell(win)
+    cell1.draw(10, 10, 50, 50)
 
-    top_left2 = Point(100, 10)
-    bottom_right2 = Point(140, 50)
-    cell2 = Cell(top_left2, bottom_right2, win)
-    cell2.draw()
+    cell2 = Cell(win)
+    cell2.draw(100, 10, 140, 50)
     cell1.draw_move(cell2)
     win.wait_for_close()
 
@@ -61,18 +57,22 @@ class Window:
 
 
 class Cell:
-    def __init__(self, top_left: Point, bottom_right: Point, win: Window) -> None:
+    def __init__(self, win: Window) -> None:
         self.has_left_wall = True
         self.has_right_wall = True
         self.has_top_wall = True
         self.has_bottom_wall = True
-        self._x1 = top_left.x
-        self._y1 = top_left.y
-        self._x2 = bottom_right.x
-        self._y2 = bottom_right.y
+        self._x1 = None
+        self._y1 = None
+        self._x2 = None
+        self._y2 = None
         self._win = win
 
-    def draw(self):
+    def draw(self, x1, y1, x2, y2):
+        self._x1 = x1
+        self._y1 = y1
+        self._x2 = x2
+        self._y2 = y2
         if self.has_left_wall:
             left_wall_top = Point(self._x1, self._y1)
             left_wall_bottom = Point(self._x1, self._y2)
