@@ -1,5 +1,6 @@
 from graphics import Window, Point, Line
 import time
+import random
 
 
 class Cell:
@@ -13,6 +14,7 @@ class Cell:
         self._x2 = None
         self._y2 = None
         self._win = win
+        self.visited = False
 
     def draw(self, x1, y1, x2, y2):
         self._x1 = x1
@@ -74,6 +76,7 @@ class Maze:
         cell_size_x,
         cell_size_y,
         win=None,
+        seed=None,
     ) -> None:
         self._x1 = x1
         self._y1 = y1
@@ -85,6 +88,9 @@ class Maze:
         self._cells = []
         self._create_cells()
         self._break_entrance_and_exit()
+        self._break_walls_r(0, 0)
+        if seed:
+            random.seed(seed)
 
     def _create_cells(self):
         for col in range(0, self._num_cols):
@@ -113,3 +119,48 @@ class Maze:
         if self._win:
             self._draw_cell(0, 0)
             self._draw_cell(self._num_cols - 1, self._num_rows - 1)
+
+    def _break_walls_r(self, col, row):
+        self._cells[col][row].visited = True
+        while True:
+            to_visit = []
+            if col != 0:
+                if not self._cells[col - 1][row].visited:
+                    to_visit.append((col - 1, row))
+            if row != 0:
+                if not self._cells[col][row - 1].visited:
+                    to_visit.append((col, row - 1))
+            if col != self._num_cols - 1:
+                if not self._cells[col + 1][row].visited:
+                    to_visit.append((col + 1, row))
+            if row != self._num_rows - 1:
+                if not self._cells[col][row + 1].visited:
+                    to_visit.append((col, row + 1))
+
+            print(to_visit)
+            if not to_visit:
+                self._draw_cell(col, row)
+                return
+
+            idx = random.randrange(len(to_visit))
+            new_col, new_row = to_visit[idx]
+            print((new_col, new_row))
+            # new cell is on the right
+            if new_col - col == 1:
+                self._cells[col][row].has_right_wall = False
+                self._cells[new_col][new_row].has_left_wall = False
+            # new cell is on the left
+            if new_col - col == -1:
+                self._cells[col][row].has_left_wall = False
+                self._cells[new_col][new_row].has_right_wall = False
+            # new cell is below
+            if new_row - row == 1:
+                self._cells[col][row].has_bottom_wall = False
+                self._cells[new_col][new_row].has_top_wall = False
+            # new cell is above
+            if new_row - row == -1:
+                self._cells[col][row].has_top_wall = False
+                self._cells[new_col][new_row].has_bottom_wall = False
+
+            # move to new cell
+            self._break_walls_r(new_col, new_row)
