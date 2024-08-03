@@ -85,12 +85,13 @@ class Maze:
         self._cell_size_x = cell_size_x
         self._cell_size_y = cell_size_y
         self._win = win
+        if seed:
+            random.seed(seed)
         self._cells = []
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
-        if seed:
-            random.seed(seed)
+        self._reset_cells_visited()
 
     def _create_cells(self):
         for col in range(0, self._num_cols):
@@ -137,14 +138,13 @@ class Maze:
                 if not self._cells[col][row + 1].visited:
                     to_visit.append((col, row + 1))
 
-            print(to_visit)
             if not to_visit:
-                self._draw_cell(col, row)
+                if self._win:
+                    self._draw_cell(col, row)
                 return
 
             idx = random.randrange(len(to_visit))
             new_col, new_row = to_visit[idx]
-            print((new_col, new_row))
             # new cell is on the right
             if new_col - col == 1:
                 self._cells[col][row].has_right_wall = False
@@ -164,3 +164,8 @@ class Maze:
 
             # move to new cell
             self._break_walls_r(new_col, new_row)
+
+    def _reset_cells_visited(self):
+        for col in range(0, self._num_cols):
+            for row in range(0, self._num_rows):
+                self._cells[col][row].visited = False
