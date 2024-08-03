@@ -169,3 +169,47 @@ class Maze:
         for col in range(0, self._num_cols):
             for row in range(0, self._num_rows):
                 self._cells[col][row].visited = False
+
+    def solve(self):
+        self._solve_r(0, 0)
+
+    def _solve_r(self, col, row):
+        current_cell = self._cells[col][row]
+        self._animate()
+        current_cell.visited = True
+        # if current cell is the exit cell then maze is solved
+        if [col, row] == [self._num_cols - 1, self._num_rows - 1]:
+            return True
+        if col != 0:
+            left_cell = self._cells[col - 1][row]
+            if not left_cell.visited and not current_cell.has_left_wall:
+                current_cell.draw_move(left_cell)
+                if self._solve_r(col - 1, row):
+                    return True
+                else:
+                    current_cell.draw_move(left_cell, undo=True)
+        if row != 0:
+            top_cell = self._cells[col][row - 1]
+            if not top_cell.visited and not current_cell.has_top_wall:
+                current_cell.draw_move(top_cell)
+                if self._solve_r(col, row - 1):
+                    return True
+                else:
+                    current_cell.draw_move(top_cell, undo=True)
+        if col != self._num_cols - 1:
+            right_cell = self._cells[col + 1][row]
+            if not right_cell.visited and not current_cell.has_right_wall:
+                current_cell.draw_move(right_cell)
+                if self._solve_r(col + 1, row):
+                    return True
+                else:
+                    current_cell.draw_move(right_cell, undo=True)
+        if row != self._num_rows - 1:
+            bottom_cell = self._cells[col][row + 1]
+            if not bottom_cell.visited and not current_cell.has_bottom_wall:
+                current_cell.draw_move(bottom_cell)
+                if self._solve_r(col, row + 1):
+                    return True
+                else:
+                    current_cell.draw_move(bottom_cell, undo=True)
+        return False
